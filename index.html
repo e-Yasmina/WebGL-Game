@@ -2,11 +2,13 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>WebGL2 Game</title>
+  <link rel="icon" type="image/png" href="image.png">
+  <title>Catch Game</title>
   <style>
     body { margin: 0; 
-    background-color: #000;}
-    canvas { display: block; background: #000; width: 100vw; height: 100%; }
+    background-color: #000;
+    overflow: hidden; }
+    canvas { display: block; background: #000; width: 100vw; height: 100vh; }
     #lives {
       position: absolute;
       top: 10px;
@@ -62,7 +64,7 @@
   <canvas id="gameCanvas"></canvas>
 
   <audio id="catchSound" src="catch.wav" preload="auto"></audio>
-  <audio id="missSound" src="miss1.wav" preload="auto"></audio>
+  <audio id="missSound" src="miss.wav" preload="auto"></audio>
   <audio id="gmaeOverSound" src="game_over.wav" preload="auto"></audio>
 
   <script type="module" src="main.js"></script>
