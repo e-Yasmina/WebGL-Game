@@ -2,6 +2,20 @@ const canvas = document.getElementById('gameCanvas');
 const gl = canvas.getContext('webgl2');
 if (!gl) alert('WebGL2 not supported');
 
+let score = 0;
+const scoreEl = document.getElementById("score");
+function updateScore() {
+  scoreEl.textContent = `Score: ${score}`;
+}
+// function updateScore() {
+//   console.log(`Updating score: ${score}`); // Debugging log
+//   if (scoreEl) {
+//     scoreEl.textContent = `Score: ${score}`;
+//   } else {
+//     console.error("Score element not found in the DOM!");
+//   }
+// }
+
 // Resize canvas
 function resize() {
   canvas.width = window.innerWidth;
@@ -57,6 +71,7 @@ function createProgram(gl, vSrc, fSrc) {
 const program = createProgram(gl, vertexSrc, fragmentSrc);
 gl.useProgram(program);
 
+
 // Paddle data (2 triangles = 1 rectangle)
 const paddleWidth = 0.3;
 const paddleHeight = 0.05;
@@ -78,8 +93,67 @@ function createPaddleVertices(x) {
 
 let vertices = createPaddleVertices(paddleX);
 const positionBuffer = gl.createBuffer();
+const paddleBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);
+
+// Falling block setup
+class Block {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.x = (Math.random() * 2 - 1) * 0.9;
+    this.y = 1.1;
+    this.size = 0.05;
+    this.speed = 0.01 + Math.random() * 0.005;
+  }
+
+  update() {
+    this.y -= this.speed;
+    // Collision with paddle
+    if (
+      this.y - this.size * 2 <= paddleY + paddleHeight &&
+      this.y >= paddleY &&
+      this.x >= paddleX - paddleWidth &&
+      this.x <= paddleX + paddleWidth
+    ) {
+      score++;
+      console.log("Block caught! Score:", score); // Debugging log
+      updateScore();
+      //console.log("🎯 Block caught!");
+      this.reset();
+    }
+    // Missed
+    if (this.y < -1.2) {
+      score = Math.max(0, score - 1);
+      console.log("Block missed! Score:", score); // Debugging log
+      updateScore();
+      //console.log("❌ Block missed!");
+      this.reset();
+    }
+  }
+
+  getVertices() {
+    return new Float32Array([
+      this.x - this.size, this.y,
+      this.x + this.size, this.y,
+      this.x - this.size, this.y - this.size * 2,
+      this.x - this.size, this.y - this.size * 2,
+      this.x + this.size, this.y,
+      this.x + this.size, this.y - this.size * 2,
+    ]);
+  }
+}
+
+const numBlocks =2;
+const blocks = Array.from({ length: numBlocks }, () => new Block());
+
+
+const blockBuffer = gl.createBuffer();
+
+
 
 // Link attribute
 const positionLoc = gl.getAttribLocation(program, "a_position");
@@ -93,24 +167,44 @@ window.addEventListener('keyup', e => keys[e.key] = false);
 
 // Game loop
 function draw() {
-  // Update paddle position
-  if (keys["ArrowLeft"]) paddleX -= paddleSpeed;
-  if (keys["ArrowRight"]) paddleX += paddleSpeed;
-
-  // Clamp to screen edges
-  const maxX = 1 - paddleWidth;
-  paddleX = Math.max(-maxX, Math.min(maxX, paddleX));
-
-  // Update paddle data
-  vertices = createPaddleVertices(paddleX);
-  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);
-
-  // Clear & draw
+  gl.clearColor(0.0, 0.0, 0.0, 1.0); // Black background
   gl.clear(gl.COLOR_BUFFER_BIT);
+
+  // Move paddle (left/right arrows)
+  if (keys["ArrowLeft"] && paddleX - paddleSpeed > -1) {
+    paddleX -= paddleSpeed;
+  }
+  if (keys["ArrowRight"] && paddleX + paddleSpeed < 1) {
+    paddleX += paddleSpeed;
+  }
+
+  // Draw paddle
+  gl.bindBuffer(gl.ARRAY_BUFFER, paddleBuffer);
+  const paddleVertices = new Float32Array([
+    paddleX - paddleWidth, paddleY,
+    paddleX + paddleWidth, paddleY,
+    paddleX - paddleWidth, paddleY + paddleHeight,
+    paddleX - paddleWidth, paddleY + paddleHeight,
+    paddleX + paddleWidth, paddleY,
+    paddleX + paddleWidth, paddleY + paddleHeight,
+  ]);
+  gl.bufferData(gl.ARRAY_BUFFER, paddleVertices, gl.DYNAMIC_DRAW);
+  gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+  // Draw and update all blocks
+  gl.bindBuffer(gl.ARRAY_BUFFER, blockBuffer);
+  for (const block of blocks) {
+    block.update();
+    const verts = block.getVertices();
+    gl.bufferData(gl.ARRAY_BUFFER, verts, gl.DYNAMIC_DRAW);
+    gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  }
 
   requestAnimationFrame(draw);
 }
 
 draw();
+
 
