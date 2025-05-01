@@ -2,19 +2,25 @@ const canvas = document.getElementById('gameCanvas');
 const gl = canvas.getContext('webgl2');
 if (!gl) alert('WebGL2 not supported');
 
+const catchSound = document.getElementById("catchSound");
+const missSound = document.getElementById("missSound");
+
+function playCatchSound() {
+  catchSound.currentTime = 0;
+  catchSound.play();
+}
+
+function playMissSound() {
+  missSound.currentTime = 0;
+  missSound.play();
+}
+
+
 let score = 0;
 const scoreEl = document.getElementById("score");
 function updateScore() {
   scoreEl.textContent = `Score: ${score}`;
 }
-// function updateScore() {
-//   console.log(`Updating score: ${score}`); // Debugging log
-//   if (scoreEl) {
-//     scoreEl.textContent = `Score: ${score}`;
-//   } else {
-//     console.error("Score element not found in the DOM!");
-//   }
-// }
 
 // Resize canvas
 function resize() {
@@ -120,15 +126,15 @@ class Block {
       this.x <= paddleX + paddleWidth
     ) {
       score++;
-      console.log("Block caught! Score:", score); // Debugging log
-      updateScore();
+      playCatchSound();
+      updateScore();      
       //console.log("🎯 Block caught!");
       this.reset();
     }
     // Missed
     if (this.y < -1.2) {
       score = Math.max(0, score - 1);
-      console.log("Block missed! Score:", score); // Debugging log
+      playMissSound();
       updateScore();
       //console.log("❌ Block missed!");
       this.reset();
