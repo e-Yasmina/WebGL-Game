@@ -2,6 +2,31 @@ const canvas = document.getElementById('gameCanvas');
 const gl = canvas.getContext('webgl2');
 if (!gl) alert('WebGL2 not supported');
 
+const restartBtn = document.getElementById('restartBtn');
+function restartGame() {
+  score = 0;
+  updateScore();
+  lives = 3;
+  gameRunning = true;
+
+  // Reset hearts
+  hearts.forEach(heart => heart.style.display = "inline");
+
+  // Reset blocks
+  blocks.forEach(block => block.reset());
+
+  // Hide Game Over & Restart button
+  gameOverText.style.display = "none";
+  restartBtn.style.display = "none";
+
+  // Start game loop again
+  draw();
+}
+
+restartBtn.addEventListener('click', restartGame);
+
+
+
 const catchSound = document.getElementById("catchSound");
 const missSound = document.getElementById("missSound");
 const gameOverSound = document.getElementById("gmaeOverSound");
@@ -157,6 +182,7 @@ class Block {
         gameRunning = false;
         gameOverText.style.display = "block";
         playGameOverSound(); // Play the game over sound
+        restartBtn.style.display = "inline";
       }
       this.reset();
     }
