@@ -7,16 +7,41 @@
     body { margin: 0; 
     background-color: #000;}
     canvas { display: block; background: #000; width: 100vw; height: 100vh; }
+    #lives {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;}
+    #gameOver {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+      text-align: center;
+    }
+    #gameOver img {
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 </head>
 <body>
-  <!-- <h1>WebGL2 Game</h1> -->
   <div id="score" style="color: rgb(255, 255, 255); font-size: 20px; padding: 10px;">Score: 0</div>
-
+  <div id="lives">
+    <span class="heart">❤️</span>
+    <span class="heart">❤️</span>
+    <span class="heart">❤️</span>
+  </div>
+  <!-- <div id="gameOver" style="display:none; color: red; font-size: 2em;">Game Over</div> -->
+  <div id="gameOver" style="display:none;">
+    <img src="game_over.gif" alt="Game Over" />
+  </div>
   <canvas id="gameCanvas"></canvas>
 
   <audio id="catchSound" src="catch.wav" preload="auto"></audio>
   <audio id="missSound" src="miss1.wav" preload="auto"></audio>
+  <audio id="gmaeOverSound" src="game_over.wav" preload="auto"></audio>
 
   <script type="module" src="main.js"></script>
 </body>

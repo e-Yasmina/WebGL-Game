@@ -4,6 +4,7 @@ if (!gl) alert('WebGL2 not supported');
 
 const catchSound = document.getElementById("catchSound");
 const missSound = document.getElementById("missSound");
+const gameOverSound = document.getElementById("gmaeOverSound");
 
 function playCatchSound() {
   catchSound.currentTime = 0;
@@ -14,6 +15,16 @@ function playMissSound() {
   missSound.currentTime = 0;
   missSound.play();
 }
+
+function playGameOverSound() {
+  gameOverSound.currentTime = 0;
+  gameOverSound.play();
+}
+
+let lives = 3;
+const hearts = document.querySelectorAll('.heart');
+const gameOverText = document.getElementById('gameOver');
+let gameRunning = true;
 
 
 let score = 0;
@@ -137,6 +148,16 @@ class Block {
       playMissSound();
       updateScore();
       //console.log("❌ Block missed!");
+      lives--;
+      if (lives >= 0 && hearts[lives]) {
+        hearts[lives].style.display = "none";
+      }
+
+      if (lives <= 0) {
+        gameRunning = false;
+        gameOverText.style.display = "block";
+        playGameOverSound(); // Play the game over sound
+      }
       this.reset();
     }
   }
@@ -173,6 +194,7 @@ window.addEventListener('keyup', e => keys[e.key] = false);
 
 // Game loop
 function draw() {
+  if (!gameRunning) return;
   gl.clearColor(0.0, 0.0, 0.0, 1.0); // Black background
   gl.clear(gl.COLOR_BUFFER_BIT);
 
