@@ -4,10 +4,11 @@ A basic WebGL2-powered mini-game where the player moves a paddle to catch fallin
 
 ## 🎮 Preview
 
+![Game Preview](preview.gif)
 <div style="text-align: center;">
   <video src="preview.mp4" autoplay loop muted playsinline width="500"></video>
 </div>
-
+<!-- ffmpeg -i preview.mp4 -vf "fps=10,scale=500:-1:flags=lanczos" preview.gif -->
 ---
 
 ## 🚀 Features
