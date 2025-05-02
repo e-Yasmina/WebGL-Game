@@ -2,6 +2,12 @@
 
 A basic WebGL2-powered mini-game where the player moves a paddle to catch falling blocks. The game tracks the score, lives, and ends after three missed blocks. Audio feedback and a restart button are included for an enhanced game feel.
 
+## 🎮 Preview
+
+<div style="text-align: center;">
+  <video src="preview.mp4" autoplay loop muted playsinline width="500"></video>
+</div>
+
 ---
 
 ## 🚀 Features

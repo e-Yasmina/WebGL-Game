@@ -24,7 +24,11 @@ function restartGame() {
 }
 
 restartBtn.addEventListener('click', restartGame);
-
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Enter' && !gameRunning) {
+    restartGame();
+  }
+});
 
 
 const catchSound = document.getElementById("catchSound");
